@@ -32,4 +32,4 @@ A robust backend REST API built with Node.js, Express, and Microsoft SQL Server.
 - **Public Endpoints:** Access products, categories, blogs, and submit contact/enquiry forms.
 - **Admin Endpoints:** JWT-secured routes for managing products, categories, and viewing form submissions.
 - **Static File Serving:** Product images and enquiry drawings are managed via the `/uploads` directory.
-- **API Documentation:** Swagger UI is available at `/api-docs`.
+- **API Documentation:** Swagger UI is available at `/api-docs`. The documentation is automatically generated using `swagger-autogen`. Every time you start the server using `npm run dev` or `npm start`, the `swagger-output.json` file is refreshed automatically based on the routes and inline controller comments.
