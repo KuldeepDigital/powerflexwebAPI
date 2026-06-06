@@ -1,4 +1,5 @@
 const { getPool, sql } = require('../db');
+const sendResponse = require('../utils/responseHandler');
 
 // GET /api/blogs  — mirrors Blogs.aspx.cs: Select * from BlogMaster
 async function getBlogs(req, res) {
@@ -7,9 +8,9 @@ async function getBlogs(req, res) {
   try {
     const pool = await getPool();
     const result = await pool.request().query('SELECT * FROM BlogMaster ORDER BY BlogId DESC');
-    res.json(result.recordset);
+    sendResponse(res, 200, true, 'Success', result.recordset);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
 }
 
@@ -22,10 +23,10 @@ async function getBlogById(req, res) {
     const result = await pool.request()
       .input('id', sql.Int, parseInt(req.params.id))
       .query('SELECT * FROM BlogMaster WHERE BlogId = @id');
-    if (!result.recordset.length) return res.status(404).json({ error: 'Not found' });
-    res.json(result.recordset[0]);
+    if (!result.recordset.length) return sendResponse(res, 404, false, 'Blog not found', null, 'Not found');
+    sendResponse(res, 200, true, 'Success', result.recordset[0]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
 }
 
@@ -36,9 +37,9 @@ async function getAwards(req, res) {
   try {
     const pool = await getPool();
     const result = await pool.request().query('SELECT * FROM AwardMaster');
-    res.json(result.recordset);
+    sendResponse(res, 200, true, 'Success', result.recordset);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
 }
 
@@ -49,9 +50,9 @@ async function getCertificates(req, res) {
   try {
     const pool = await getPool();
     const result = await pool.request().query('SELECT * FROM CertificateMaster');
-    res.json(result.recordset);
+    sendResponse(res, 200, true, 'Success', result.recordset);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
 }
 
@@ -62,9 +63,9 @@ async function getCareers(req, res) {
   try {
     const pool = await getPool();
     const result = await pool.request().query('SELECT * FROM Vacancies');
-    res.json(result.recordset);
+    sendResponse(res, 200, true, 'Success', result.recordset);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
 }
 

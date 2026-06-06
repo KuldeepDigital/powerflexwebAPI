@@ -29,11 +29,8 @@
         "summary": "Get all categories",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -53,11 +50,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -82,11 +76,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -107,14 +98,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -127,11 +112,8 @@
         "summary": "Get all blogs",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -152,14 +134,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -172,11 +148,8 @@
         "summary": "Get all awards",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -189,11 +162,8 @@
         "summary": "Get all certificates",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -206,11 +176,8 @@
         "summary": "Get all careers",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -249,11 +216,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -322,11 +286,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -353,14 +314,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -390,14 +345,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -410,9 +359,6 @@
         "summary": "Get all products (Admin)",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -451,14 +397,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -506,14 +446,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -532,14 +466,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -552,9 +480,6 @@
         "summary": "Get all categories (Admin)",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -581,9 +506,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -606,9 +528,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -623,9 +542,6 @@
         "summary": "Get all subcategories (Admin)",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -655,9 +571,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -680,9 +593,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -697,9 +607,6 @@
         "summary": "Get all enquiries",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -714,9 +621,6 @@
         "summary": "Get all contact messages",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -731,9 +635,6 @@
         "summary": "Get newsletter subscribers",
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -756,9 +657,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           }
@@ -790,14 +688,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }

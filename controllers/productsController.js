@@ -1,4 +1,5 @@
 const { getPool, sql } = require('../db');
+const sendResponse = require('../utils/responseHandler');
 
 // GET /api/categories  — mirrors Products.aspx.cs Page_Load: Select * from CategoryMaster
 async function getCategories(req, res) {
@@ -7,9 +8,9 @@ async function getCategories(req, res) {
   try {
     const pool = await getPool();
     const result = await pool.request().query('SELECT * FROM CategoryMaster');
-    res.json(result.recordset);
+    sendResponse(res, 200, true, 'Success', result.recordset);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
 }
 
@@ -32,9 +33,9 @@ async function getProducts(req, res) {
       request.input('subcategory', sql.NVarChar, subcategory);
     }
     const result = await request.query(query);
-    res.json(result.recordset);
+    sendResponse(res, 200, true, 'Success', result.recordset);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
 }
 
@@ -47,10 +48,10 @@ async function getProductById(req, res) {
     const result = await pool.request()
       .input('id', sql.Int, parseInt(req.params.id))
       .query('SELECT * FROM ProductMaster WHERE ProductId = @id');
-    if (!result.recordset.length) return res.status(404).json({ error: 'Not found' });
-    res.json(result.recordset[0]);
+    if (!result.recordset.length) return sendResponse(res, 404, false, 'Product not found', null, 'Not found');
+    sendResponse(res, 200, true, 'Success', result.recordset[0]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
 }
 
@@ -68,9 +69,9 @@ async function getSubcategories(req, res) {
       request.input('category', sql.NVarChar, category);
     }
     const result = await request.query(query);
-    res.json(result.recordset);
+    sendResponse(res, 200, true, 'Success', result.recordset);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
 }
 
