@@ -5,6 +5,8 @@ require('dotenv').config();
 
 // POST /api/admin/login  — replaces AdminLogin.aspx.cs credential check
 async function adminLogin(req, res) {
+  /* #swagger.tags = ['Admin Auth']
+     #swagger.summary = 'Admin login' */
   const { username, password } = req.body;
   try {
     const pool = await getPool();
@@ -31,12 +33,16 @@ async function adminLogin(req, res) {
 
 // ─── Products CRUD ─────────────────────────────────────────────
 async function adminGetProducts(req, res) {
+  /* #swagger.tags = ['Admin Products']
+     #swagger.summary = 'Get all products (Admin)' */
   const pool = await getPool();
   const result = await pool.request().query('SELECT * FROM ProductMaster');
   res.json(result.recordset);
 }
 
 async function adminCreateProduct(req, res) {
+  /* #swagger.tags = ['Admin Products']
+     #swagger.summary = 'Create a product' */
   const { productName, category, subcategory, description, specifications } = req.body;
   const imagePath = req.file ? `/uploads/${req.file.filename}` : '';
   try {
@@ -56,6 +62,8 @@ async function adminCreateProduct(req, res) {
 }
 
 async function adminUpdateProduct(req, res) {
+  /* #swagger.tags = ['Admin Products']
+     #swagger.summary = 'Update a product' */
   const { productName, category, subcategory, description, specifications } = req.body;
   const imagePath = req.file ? `/uploads/${req.file.filename}` : req.body.existingImage || '';
   try {
@@ -76,6 +84,8 @@ async function adminUpdateProduct(req, res) {
 }
 
 async function adminDeleteProduct(req, res) {
+  /* #swagger.tags = ['Admin Products']
+     #swagger.summary = 'Delete a product' */
   try {
     const pool = await getPool();
     await pool.request()
@@ -89,17 +99,23 @@ async function adminDeleteProduct(req, res) {
 
 // ─── Category CRUD ─────────────────────────────────────────────
 async function adminGetCategories(req, res) {
+  /* #swagger.tags = ['Admin Categories']
+     #swagger.summary = 'Get all categories (Admin)' */
   const pool = await getPool();
   const result = await pool.request().query('SELECT * FROM CategoryMaster');
   res.json(result.recordset);
 }
 async function adminCreateCategory(req, res) {
+  /* #swagger.tags = ['Admin Categories']
+     #swagger.summary = 'Create a category' */
   const { categoryName } = req.body;
   const pool = await getPool();
   await pool.request().input('CategoryName', sql.NVarChar, categoryName).query('INSERT INTO CategoryMaster (CategoryName) VALUES (@CategoryName)');
   res.json({ message: 'Category created' });
 }
 async function adminDeleteCategory(req, res) {
+  /* #swagger.tags = ['Admin Categories']
+     #swagger.summary = 'Delete a category' */
   const pool = await getPool();
   await pool.request().input('id', sql.Int, parseInt(req.params.id)).query('DELETE FROM CategoryMaster WHERE CategoryId = @id');
   res.json({ message: 'Category deleted' });
@@ -107,11 +123,15 @@ async function adminDeleteCategory(req, res) {
 
 // ─── Subcategory CRUD ──────────────────────────────────────────
 async function adminGetSubcategories(req, res) {
+  /* #swagger.tags = ['Admin Subcategories']
+     #swagger.summary = 'Get all subcategories (Admin)' */
   const pool = await getPool();
   const result = await pool.request().query('SELECT * FROM SubcategoryMaster');
   res.json(result.recordset);
 }
 async function adminCreateSubcategory(req, res) {
+  /* #swagger.tags = ['Admin Subcategories']
+     #swagger.summary = 'Create a subcategory' */
   const { subcategoryName, categoryName } = req.body;
   const pool = await getPool();
   await pool.request()
@@ -121,6 +141,8 @@ async function adminCreateSubcategory(req, res) {
   res.json({ message: 'Subcategory created' });
 }
 async function adminDeleteSubcategory(req, res) {
+  /* #swagger.tags = ['Admin Subcategories']
+     #swagger.summary = 'Delete a subcategory' */
   const pool = await getPool();
   await pool.request().input('id', sql.Int, parseInt(req.params.id)).query('DELETE FROM SubcategoryMaster WHERE SubcategoryId = @id');
   res.json({ message: 'Subcategory deleted' });
@@ -128,21 +150,29 @@ async function adminDeleteSubcategory(req, res) {
 
 // ─── Read-only views ───────────────────────────────────────────
 async function adminGetEnquiries(req, res) {
+  /* #swagger.tags = ['Admin Data Views']
+     #swagger.summary = 'Get all enquiries' */
   const pool = await getPool();
   const result = await pool.request().query('SELECT * FROM EnquiryMaster ORDER BY EnquiryId DESC');
   res.json(result.recordset);
 }
 async function adminGetContacts(req, res) {
+  /* #swagger.tags = ['Admin Data Views']
+     #swagger.summary = 'Get all contact messages' */
   const pool = await getPool();
   const result = await pool.request().query('SELECT * FROM UserMaster ORDER BY UserId DESC');
   res.json(result.recordset);
 }
 async function adminGetNewsletter(req, res) {
+  /* #swagger.tags = ['Admin Newsletter']
+     #swagger.summary = 'Get newsletter subscribers' */
   const pool = await getPool();
   const result = await pool.request().query('SELECT * FROM NewsletterMaster');
   res.json(result.recordset);
 }
 async function adminDeleteNewsletter(req, res) {
+  /* #swagger.tags = ['Admin Newsletter']
+     #swagger.summary = 'Delete a newsletter subscriber' */
   const pool = await getPool();
   await pool.request().input('id', sql.Int, parseInt(req.params.id)).query('DELETE FROM NewsletterMaster WHERE Id = @id');
   res.json({ message: 'Unsubscribed' });
@@ -150,6 +180,8 @@ async function adminDeleteNewsletter(req, res) {
 
 // ─── Change Password ───────────────────────────────────────────
 async function adminChangePassword(req, res) {
+  /* #swagger.tags = ['Admin Auth']
+     #swagger.summary = 'Change admin password' */
   const { currentPassword, newPassword } = req.body;
   try {
     const pool = await getPool();

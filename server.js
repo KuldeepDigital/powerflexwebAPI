@@ -3,8 +3,13 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerDocument = YAML.load(path.join(__dirname, 'swagger.yaml'));
+
+let swaggerDocument = {};
+try {
+  swaggerDocument = require('./swagger-output.json');
+} catch (err) {
+  console.log('Swagger documentation not found. Run `npm run swagger` to generate it.');
+}
 
 const publicRoutes = require('./routes/public');
 const adminRoutes = require('./routes/admin');

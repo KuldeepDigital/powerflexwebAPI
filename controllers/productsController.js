@@ -2,6 +2,8 @@ const { getPool, sql } = require('../db');
 
 // GET /api/categories  — mirrors Products.aspx.cs Page_Load: Select * from CategoryMaster
 async function getCategories(req, res) {
+  /* #swagger.tags = ['Public Products']
+     #swagger.summary = 'Get all categories' */
   try {
     const pool = await getPool();
     const result = await pool.request().query('SELECT * FROM CategoryMaster');
@@ -14,6 +16,8 @@ async function getCategories(req, res) {
 // GET /api/products  — mirrors page load + category/subcategory filtering
 // Query params: ?category=X&subcategory=Y
 async function getProducts(req, res) {
+  /* #swagger.tags = ['Public Products']
+     #swagger.summary = 'Get all products' */
   try {
     const pool = await getPool();
     const { category, subcategory } = req.query;
@@ -36,6 +40,8 @@ async function getProducts(req, res) {
 
 // GET /api/products/:id  — mirrors ProductDetails.aspx.cs using Session["productid"]
 async function getProductById(req, res) {
+  /* #swagger.tags = ['Public Products']
+     #swagger.summary = 'Get product by ID' */
   try {
     const pool = await getPool();
     const result = await pool.request()
@@ -50,6 +56,8 @@ async function getProductById(req, res) {
 
 // GET /api/subcategories?category=X
 async function getSubcategories(req, res) {
+  /* #swagger.tags = ['Public Products']
+     #swagger.summary = 'Get all subcategories' */
   try {
     const pool = await getPool();
     const { category } = req.query;

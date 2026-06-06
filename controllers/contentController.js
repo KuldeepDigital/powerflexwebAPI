@@ -2,6 +2,8 @@ const { getPool, sql } = require('../db');
 
 // GET /api/blogs  — mirrors Blogs.aspx.cs: Select * from BlogMaster
 async function getBlogs(req, res) {
+  /* #swagger.tags = ['Public Content']
+     #swagger.summary = 'Get all blogs' */
   try {
     const pool = await getPool();
     const result = await pool.request().query('SELECT * FROM BlogMaster ORDER BY BlogId DESC');
@@ -13,6 +15,8 @@ async function getBlogs(req, res) {
 
 // GET /api/blogs/:id  — mirrors BlogDetails.aspx.cs using Session["blogid"]
 async function getBlogById(req, res) {
+  /* #swagger.tags = ['Public Content']
+     #swagger.summary = 'Get blog by ID' */
   try {
     const pool = await getPool();
     const result = await pool.request()
@@ -27,6 +31,8 @@ async function getBlogById(req, res) {
 
 // GET /api/awards  — mirrors UserAwards.aspx.cs
 async function getAwards(req, res) {
+  /* #swagger.tags = ['Public Content']
+     #swagger.summary = 'Get all awards' */
   try {
     const pool = await getPool();
     const result = await pool.request().query('SELECT * FROM AwardMaster');
@@ -38,6 +44,8 @@ async function getAwards(req, res) {
 
 // GET /api/certificates  — mirrors UserCertificates.aspx.cs
 async function getCertificates(req, res) {
+  /* #swagger.tags = ['Public Content']
+     #swagger.summary = 'Get all certificates' */
   try {
     const pool = await getPool();
     const result = await pool.request().query('SELECT * FROM CertificateMaster');
@@ -49,9 +57,11 @@ async function getCertificates(req, res) {
 
 // GET /api/careers
 async function getCareers(req, res) {
+  /* #swagger.tags = ['Public Content']
+     #swagger.summary = 'Get all careers' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM VacancyMaster');
+    const result = await pool.request().query('SELECT * FROM Vacancies');
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ error: err.message });

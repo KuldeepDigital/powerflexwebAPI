@@ -4,6 +4,8 @@ const path = require('path');
 
 // POST /api/contact  — mirrors ContactUs.aspx.cs submitButton_Click
 async function submitContact(req, res) {
+  /* #swagger.tags = ['Public Forms']
+     #swagger.summary = 'Submit a contact form' */
   const { name, emailId, contactNo, companyName, designation } = req.body;
   try {
     const pool = await getPool();
@@ -28,6 +30,8 @@ async function submitContact(req, res) {
 
 // POST /api/enquiry  — mirrors Enquiry.aspx.cs submitButton_Click (with file upload via multer)
 async function submitEnquiry(req, res) {
+  /* #swagger.tags = ['Public Forms']
+     #swagger.summary = 'Submit a product enquiry' */
   const {
     name, emailId, contactNo, companyName, productName,
     size, temperature, application, media, pressure,
@@ -74,6 +78,8 @@ async function submitEnquiry(req, res) {
 
 // POST /api/newsletter/subscribe  — mirrors UserMaster.Master subscribeLinkButton_Click
 async function subscribeNewsletter(req, res) {
+  /* #swagger.tags = ['Public Forms']
+     #swagger.summary = 'Subscribe to newsletter' */
   const { emailId } = req.body;
   if (!emailId) return res.status(400).json({ error: 'Email is required' });
   try {
