@@ -2,6 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load(path.join(__dirname, 'swagger.yaml'));
 
 const publicRoutes = require('./routes/public');
 const adminRoutes = require('./routes/admin');
@@ -18,8 +21,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ── Root Route ────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-  res.json({ message: 'Powerflex API is running', endpoints: ['/api', '/api/admin'] });
+  res.json({ message: 'Powerflex API is running', endpoints: ['/api', '/api/admin', '/api-docs'] });
 });
+
+// ── Swagger UI ────────────────────────────────────────────────────
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // ── Routes ────────────────────────────────────────────────────────
 app.use('/api', publicRoutes);
@@ -27,4 +33,7 @@ app.use('/api/admin', adminRoutes);
 
 // ── Start ─────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Powerflex API running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Powerflex API running on http://localhost:${PORT}`);
+  console.log(`Swagger Docs running on http://localhost:${PORT}/api-docs`);
+});
