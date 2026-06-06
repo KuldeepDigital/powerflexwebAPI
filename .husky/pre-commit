@@ -1,0 +1,4 @@
+#!/bin/sh
+npm.cmd run swagger
+node.exe scripts/update-readme.js
+git add README.md swagger-output.json
