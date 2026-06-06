@@ -1,0 +1,458 @@
+openapi: 3.0.0
+info:
+  title: Powerflex Web API
+  version: 1.0.0
+  description: API documentation for Powerflex Web API
+servers:
+  - url: http://localhost:5000
+    description: Development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /api/categories:
+    get:
+      tags:
+        - Public Products
+      summary: Get all categories
+      responses:
+        '200':
+          description: A list of categories
+
+  /api/subcategories:
+    get:
+      tags:
+        - Public Products
+      summary: Get all subcategories
+      responses:
+        '200':
+          description: A list of subcategories
+
+  /api/products:
+    get:
+      tags:
+        - Public Products
+      summary: Get all products
+      responses:
+        '200':
+          description: A list of products
+
+  /api/products/{id}:
+    get:
+      tags:
+        - Public Products
+      summary: Get a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product details
+        '404':
+          description: Product not found
+
+  /api/blogs:
+    get:
+      tags:
+        - Public Content
+      summary: Get all blogs
+      responses:
+        '200':
+          description: A list of blogs
+
+  /api/blogs/{id}:
+    get:
+      tags:
+        - Public Content
+      summary: Get a blog by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Blog details
+        '404':
+          description: Blog not found
+
+  /api/awards:
+    get:
+      tags:
+        - Public Content
+      summary: Get all awards
+      responses:
+        '200':
+          description: A list of awards
+
+  /api/certificates:
+    get:
+      tags:
+        - Public Content
+      summary: Get all certificates
+      responses:
+        '200':
+          description: A list of certificates
+
+  /api/careers:
+    get:
+      tags:
+        - Public Content
+      summary: Get all careers
+      responses:
+        '200':
+          description: A list of careers
+
+  /api/contact:
+    post:
+      tags:
+        - Public Forms
+      summary: Submit a contact form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Name:
+                  type: string
+                Email:
+                  type: string
+                Subject:
+                  type: string
+                Message:
+                  type: string
+      responses:
+        '200':
+          description: Contact submitted successfully
+
+  /api/enquiry:
+    post:
+      tags:
+        - Public Forms
+      summary: Submit a product enquiry
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                Name:
+                  type: string
+                Email:
+                  type: string
+                Company:
+                  type: string
+                Phone:
+                  type: string
+                ProductId:
+                  type: integer
+                drawing:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Enquiry submitted successfully
+
+  /api/newsletter/subscribe:
+    post:
+      tags:
+        - Public Forms
+      summary: Subscribe to newsletter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Email:
+                  type: string
+      responses:
+        '200':
+          description: Subscribed successfully
+
+  /api/admin/login:
+    post:
+      tags:
+        - Admin Auth
+      summary: Admin login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Invalid credentials
+
+  /api/admin/products:
+    get:
+      tags:
+        - Admin Products
+      summary: Get all products (Admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of products
+    post:
+      tags:
+        - Admin Products
+      summary: Create a product
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                Title:
+                  type: string
+                Description:
+                  type: string
+                CategoryId:
+                  type: integer
+                SubcategoryId:
+                  type: integer
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Product created
+
+  /api/admin/products/{id}:
+    put:
+      tags:
+        - Admin Products
+      summary: Update a product
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                Title:
+                  type: string
+                Description:
+                  type: string
+                CategoryId:
+                  type: integer
+                SubcategoryId:
+                  type: integer
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Product updated
+    delete:
+      tags:
+        - Admin Products
+      summary: Delete a product
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product deleted
+
+  /api/admin/categories:
+    get:
+      tags:
+        - Admin Categories
+      summary: Get all categories (Admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of categories
+    post:
+      tags:
+        - Admin Categories
+      summary: Create a category
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                CategoryName:
+                  type: string
+      responses:
+        '201':
+          description: Category created
+
+  /api/admin/categories/{id}:
+    delete:
+      tags:
+        - Admin Categories
+      summary: Delete a category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Category deleted
+
+  /api/admin/subcategories:
+    get:
+      tags:
+        - Admin Subcategories
+      summary: Get all subcategories (Admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of subcategories
+    post:
+      tags:
+        - Admin Subcategories
+      summary: Create a subcategory
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                SubcategoryName:
+                  type: string
+                CategoryId:
+                  type: integer
+      responses:
+        '201':
+          description: Subcategory created
+
+  /api/admin/subcategories/{id}:
+    delete:
+      tags:
+        - Admin Subcategories
+      summary: Delete a subcategory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Subcategory deleted
+
+  /api/admin/enquiries:
+    get:
+      tags:
+        - Admin Data Views
+      summary: Get all enquiries
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of enquiries
+
+  /api/admin/contacts:
+    get:
+      tags:
+        - Admin Data Views
+      summary: Get all contact messages
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of contact messages
+
+  /api/admin/newsletter:
+    get:
+      tags:
+        - Admin Newsletter
+      summary: Get newsletter subscribers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of subscribers
+
+  /api/admin/newsletter/{id}:
+    delete:
+      tags:
+        - Admin Newsletter
+      summary: Delete a newsletter subscriber
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Subscriber deleted
+
+  /api/admin/change-password:
+    put:
+      tags:
+        - Admin Auth
+      summary: Change admin password
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        '200':
+          description: Password updated
