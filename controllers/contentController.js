@@ -1,4 +1,4 @@
-const { getPool, sql } = require('../db');
+const { getPool } = require('../db');
 const sendResponse = require('../utils/responseHandler');
 
 // GET /api/blogs  — mirrors Blogs.aspx.cs: Select * from BlogMaster
@@ -7,8 +7,8 @@ async function getBlogs(req, res) {
      #swagger.summary = 'Get all blogs' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM BlogMaster ORDER BY BlogId DESC');
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute('SELECT * FROM BlogMaster ORDER BY BlogId DESC');
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -20,11 +20,9 @@ async function getBlogById(req, res) {
      #swagger.summary = 'Get blog by ID' */
   try {
     const pool = await getPool();
-    const result = await pool.request()
-      .input('id', sql.Int, parseInt(req.params.id))
-      .query('SELECT * FROM BlogMaster WHERE BlogId = @id');
-    if (!result.recordset.length) return sendResponse(res, 404, false, 'Blog not found', null, 'Not found');
-    sendResponse(res, 200, true, 'Success', result.recordset[0]);
+    const [rows] = await pool.execute('SELECT * FROM BlogMaster WHERE BlogId = ?', [parseInt(req.params.id)]);
+    if (!rows.length) return sendResponse(res, 404, false, 'Blog not found', null, 'Not found');
+    sendResponse(res, 200, true, 'Success', rows[0]);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -36,8 +34,8 @@ async function getAwards(req, res) {
      #swagger.summary = 'Get all awards' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM AwardMaster');
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute('SELECT * FROM AwardMaster');
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -49,8 +47,8 @@ async function getCertificates(req, res) {
      #swagger.summary = 'Get all certificates' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM CertificateMaster');
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute('SELECT * FROM CertificateMaster');
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -62,8 +60,8 @@ async function getCareers(req, res) {
      #swagger.summary = 'Get all careers' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM Vacancies');
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute('SELECT * FROM Vacancies');
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }

@@ -1,4 +1,4 @@
-const { getPool, sql } = require('../db');
+const { getPool } = require('../db');
 const sendResponse = require('../utils/responseHandler');
 
 // GET /api/categories  — mirrors Products.aspx.cs Page_Load: Select * from CategoryMaster
@@ -7,8 +7,8 @@ async function getCategories(req, res) {
      #swagger.summary = 'Get all categories' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM CategoryMaster');
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute('SELECT * FROM CategoryMaster');
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -23,17 +23,17 @@ async function getProducts(req, res) {
     const pool = await getPool();
     const { category, subcategory } = req.query;
     let query = 'SELECT * FROM ProductMaster WHERE 1=1';
-    const request = pool.request();
+    const params = [];
     if (category) {
-      query += ' AND Category = @category';
-      request.input('category', sql.NVarChar, category);
+      query += ' AND Category = ?';
+      params.push(category);
     }
     if (subcategory) {
-      query += ' AND Subcategory = @subcategory';
-      request.input('subcategory', sql.NVarChar, subcategory);
+      query += ' AND Subcategory = ?';
+      params.push(subcategory);
     }
-    const result = await request.query(query);
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute(query, params);
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -45,11 +45,9 @@ async function getProductById(req, res) {
      #swagger.summary = 'Get product by ID' */
   try {
     const pool = await getPool();
-    const result = await pool.request()
-      .input('id', sql.Int, parseInt(req.params.id))
-      .query('SELECT * FROM ProductMaster WHERE ProductId = @id');
-    if (!result.recordset.length) return sendResponse(res, 404, false, 'Product not found', null, 'Not found');
-    sendResponse(res, 200, true, 'Success', result.recordset[0]);
+    const [rows] = await pool.execute('SELECT * FROM ProductMaster WHERE ProductId = ?', [parseInt(req.params.id)]);
+    if (!rows.length) return sendResponse(res, 404, false, 'Product not found', null, 'Not found');
+    sendResponse(res, 200, true, 'Success', rows[0]);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -62,14 +60,14 @@ async function getSubcategories(req, res) {
   try {
     const pool = await getPool();
     const { category } = req.query;
-    const request = pool.request();
     let query = 'SELECT * FROM SubcategoryMaster';
+    const params = [];
     if (category) {
-      query += ' WHERE CategoryName = @category';
-      request.input('category', sql.NVarChar, category);
+      query += ' WHERE CategoryName = ?';
+      params.push(category);
     }
-    const result = await request.query(query);
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute(query, params);
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }

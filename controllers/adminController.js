@@ -1,4 +1,4 @@
-const { getPool, sql } = require('../db');
+const { getPool } = require('../db');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
@@ -11,15 +11,13 @@ async function adminLogin(req, res) {
   const { username, password } = req.body;
   try {
     const pool = await getPool();
-    const result = await pool.request()
-      .input('Username', sql.NVarChar, username)
-      .query('SELECT * FROM AdminMaster WHERE Username = @Username');
+    const [rows] = await pool.execute('SELECT * FROM AdminMaster WHERE Username = ?', [username]);
 
-    if (!result.recordset.length) {
+    if (!rows.length) {
       return sendResponse(res, 401, false, 'Invalid credentials', null, 'Invalid credentials');
     }
 
-    const admin = result.recordset[0];
+    const admin = rows[0];
     // If passwords are stored as plain text in DB (original app), compare directly
     // Otherwise use bcrypt.compare for hashed passwords
     const valid = admin.Password === password || await bcrypt.compare(password, admin.Password);
@@ -38,8 +36,8 @@ async function adminGetProducts(req, res) {
      #swagger.summary = 'Get all products (Admin)' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM ProductMaster');
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute('SELECT * FROM ProductMaster');
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -52,14 +50,10 @@ async function adminCreateProduct(req, res) {
   const imagePath = req.file ? `/uploads/${req.file.filename}` : '';
   try {
     const pool = await getPool();
-    await pool.request()
-      .input('ProductName', sql.NVarChar, productName)
-      .input('Category', sql.NVarChar, category)
-      .input('Subcategory', sql.NVarChar, subcategory)
-      .input('Description', sql.NVarChar, description || '')
-      .input('Specifications', sql.NVarChar, specifications || '')
-      .input('ImagePath', sql.NVarChar, imagePath)
-      .query('INSERT INTO ProductMaster (ProductName, Category, Subcategory, Description, Specifications, ImagePath) VALUES (@ProductName, @Category, @Subcategory, @Description, @Specifications, @ImagePath)');
+    await pool.execute(
+      'INSERT INTO ProductMaster (ProductName, Category, Subcategory, Description, Specifications, ImagePath) VALUES (?, ?, ?, ?, ?, ?)',
+      [productName, category, subcategory, description || '', specifications || '', imagePath]
+    );
     sendResponse(res, 201, true, 'Product created');
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
@@ -73,15 +67,10 @@ async function adminUpdateProduct(req, res) {
   const imagePath = req.file ? `/uploads/${req.file.filename}` : req.body.existingImage || '';
   try {
     const pool = await getPool();
-    await pool.request()
-      .input('id', sql.Int, parseInt(req.params.id))
-      .input('ProductName', sql.NVarChar, productName)
-      .input('Category', sql.NVarChar, category)
-      .input('Subcategory', sql.NVarChar, subcategory)
-      .input('Description', sql.NVarChar, description || '')
-      .input('Specifications', sql.NVarChar, specifications || '')
-      .input('ImagePath', sql.NVarChar, imagePath)
-      .query('UPDATE ProductMaster SET ProductName=@ProductName, Category=@Category, Subcategory=@Subcategory, Description=@Description, Specifications=@Specifications, ImagePath=@ImagePath WHERE ProductId=@id');
+    await pool.execute(
+      'UPDATE ProductMaster SET ProductName=?, Category=?, Subcategory=?, Description=?, Specifications=?, ImagePath=? WHERE ProductId=?',
+      [productName, category, subcategory, description || '', specifications || '', imagePath, parseInt(req.params.id)]
+    );
     sendResponse(res, 200, true, 'Product updated');
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
@@ -93,9 +82,7 @@ async function adminDeleteProduct(req, res) {
      #swagger.summary = 'Delete a product' */
   try {
     const pool = await getPool();
-    await pool.request()
-      .input('id', sql.Int, parseInt(req.params.id))
-      .query('DELETE FROM ProductMaster WHERE ProductId = @id');
+    await pool.execute('DELETE FROM ProductMaster WHERE ProductId = ?', [parseInt(req.params.id)]);
     sendResponse(res, 200, true, 'Product deleted');
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
@@ -121,7 +108,7 @@ async function adminCreateCategory(req, res) {
   const { categoryName } = req.body;
   try {
     const pool = await getPool();
-    await pool.request().input('CategoryName', sql.NVarChar, categoryName).query('INSERT INTO CategoryMaster (CategoryName) VALUES (@CategoryName)');
+    await pool.execute('INSERT INTO CategoryMaster (CategoryName) VALUES (?)', [categoryName]);
     sendResponse(res, 201, true, 'Category created');
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
@@ -133,7 +120,7 @@ async function adminDeleteCategory(req, res) {
      #swagger.summary = 'Delete a category' */
   try {
     const pool = await getPool();
-    await pool.request().input('id', sql.Int, parseInt(req.params.id)).query('DELETE FROM CategoryMaster WHERE CategoryId = @id');
+    await pool.execute('DELETE FROM CategoryMaster WHERE CategoryId = ?', [parseInt(req.params.id)]);
     sendResponse(res, 200, true, 'Category deleted');
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
@@ -146,8 +133,8 @@ async function adminGetSubcategories(req, res) {
      #swagger.summary = 'Get all subcategories (Admin)' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM SubcategoryMaster');
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute('SELECT * FROM SubcategoryMaster');
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -159,10 +146,10 @@ async function adminCreateSubcategory(req, res) {
   const { subcategoryName, categoryName } = req.body;
   try {
     const pool = await getPool();
-    await pool.request()
-      .input('SubcategoryName', sql.NVarChar, subcategoryName)
-      .input('CategoryName', sql.NVarChar, categoryName)
-      .query('INSERT INTO SubcategoryMaster (SubcategoryName, CategoryName) VALUES (@SubcategoryName, @CategoryName)');
+    await pool.execute(
+      'INSERT INTO SubcategoryMaster (SubcategoryName, CategoryName) VALUES (?, ?)',
+      [subcategoryName, categoryName]
+    );
     sendResponse(res, 201, true, 'Subcategory created');
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
@@ -174,7 +161,7 @@ async function adminDeleteSubcategory(req, res) {
      #swagger.summary = 'Delete a subcategory' */
   try {
     const pool = await getPool();
-    await pool.request().input('id', sql.Int, parseInt(req.params.id)).query('DELETE FROM SubcategoryMaster WHERE SubcategoryId = @id');
+    await pool.execute('DELETE FROM SubcategoryMaster WHERE SubcategoryId = ?', [parseInt(req.params.id)]);
     sendResponse(res, 200, true, 'Subcategory deleted');
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
@@ -187,8 +174,8 @@ async function adminGetEnquiries(req, res) {
      #swagger.summary = 'Get all enquiries' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM EnquiryMaster ORDER BY EnquiryId DESC');
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute('SELECT * FROM EnquiryMaster ORDER BY EnquiryId DESC');
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -199,8 +186,8 @@ async function adminGetContacts(req, res) {
      #swagger.summary = 'Get all contact messages' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM UserMaster ORDER BY UserId DESC');
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute('SELECT * FROM UserMaster ORDER BY UserId DESC');
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -211,8 +198,8 @@ async function adminGetNewsletter(req, res) {
      #swagger.summary = 'Get newsletter subscribers' */
   try {
     const pool = await getPool();
-    const result = await pool.request().query('SELECT * FROM NewsletterMaster');
-    sendResponse(res, 200, true, 'Success', result.recordset);
+    const [rows] = await pool.execute('SELECT * FROM NewsletterMaster');
+    sendResponse(res, 200, true, 'Success', rows);
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
   }
@@ -223,7 +210,7 @@ async function adminDeleteNewsletter(req, res) {
      #swagger.summary = 'Delete a newsletter subscriber' */
   try {
     const pool = await getPool();
-    await pool.request().input('id', sql.Int, parseInt(req.params.id)).query('DELETE FROM NewsletterMaster WHERE Id = @id');
+    await pool.execute('DELETE FROM NewsletterMaster WHERE Id = ?', [parseInt(req.params.id)]);
     sendResponse(res, 200, true, 'Unsubscribed');
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);
@@ -237,15 +224,10 @@ async function adminChangePassword(req, res) {
   const { currentPassword, newPassword } = req.body;
   try {
     const pool = await getPool();
-    const result = await pool.request()
-      .input('id', sql.Int, req.admin.id)
-      .query('SELECT * FROM AdminMaster WHERE AdminId = @id');
-    const admin = result.recordset[0];
+    const [rows] = await pool.execute('SELECT * FROM AdminMaster WHERE AdminId = ?', [req.admin.id]);
+    const admin = rows[0];
     if (admin.Password !== currentPassword) return sendResponse(res, 401, false, 'Current password incorrect', null, 'Current password incorrect');
-    await pool.request()
-      .input('id', sql.Int, req.admin.id)
-      .input('Password', sql.NVarChar, newPassword)
-      .query('UPDATE AdminMaster SET Password = @Password WHERE AdminId = @id');
+    await pool.execute('UPDATE AdminMaster SET Password = ? WHERE AdminId = ?', [newPassword, req.admin.id]);
     sendResponse(res, 200, true, 'Password updated');
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);

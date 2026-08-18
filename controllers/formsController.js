@@ -1,4 +1,4 @@
-const { getPool, sql } = require('../db');
+const { getPool } = require('../db');
 const { sendMail } = require('../mailer');
 const path = require('path');
 const sendResponse = require('../utils/responseHandler');
@@ -10,13 +10,10 @@ async function submitContact(req, res) {
   const { name, emailId, contactNo, companyName, designation } = req.body;
   try {
     const pool = await getPool();
-    await pool.request()
-      .input('Name', sql.NVarChar, name)
-      .input('EmailId', sql.NVarChar, emailId)
-      .input('ContactNo', sql.NVarChar, contactNo)
-      .input('CompanyName', sql.NVarChar, companyName)
-      .input('Designation', sql.NVarChar, designation)
-      .execute('InsertUser');
+    await pool.execute(
+      'CALL InsertUser(?, ?, ?, ?, ?)',
+      [name, emailId, contactNo, companyName, designation]
+    );
 
     await sendMail({
       subject: 'WEBSITE INQUIRY',
@@ -42,24 +39,10 @@ async function submitEnquiry(req, res) {
 
   try {
     const pool = await getPool();
-    await pool.request()
-      .input('Name', sql.NVarChar, name)
-      .input('EmailId', sql.NVarChar, emailId)
-      .input('ContactNo', sql.NVarChar, contactNo)
-      .input('CompanyName', sql.NVarChar, companyName)
-      .input('ProductName', sql.NVarChar, productName)
-      .input('Size', sql.NVarChar, size)
-      .input('Temperature', sql.NVarChar, temperature)
-      .input('Application', sql.NVarChar, application)
-      .input('Media', sql.NVarChar, media)
-      .input('Pressure', sql.NVarChar, pressure)
-      .input('Length', sql.NVarChar, length)
-      .input('FittingsOne', sql.NVarChar, fittingsOne)
-      .input('FittingsTwo', sql.NVarChar, fittingsTwo)
-      .input('Drawing', sql.NVarChar, drawingPath)
-      .input('Qty', sql.NVarChar, qty)
-      .input('Remarks', sql.NVarChar, remarks)
-      .execute('InsertEnquiry');
+    await pool.execute(
+      'CALL InsertEnquiry(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, emailId, contactNo, companyName, productName, size, temperature, application, media, pressure, length, fittingsOne, fittingsTwo, drawingPath, qty, remarks]
+    );
 
     const attachments = req.file
       ? [{ filename: req.file.originalname, path: req.file.path }]
@@ -86,15 +69,11 @@ async function subscribeNewsletter(req, res) {
   try {
     const pool = await getPool();
     // Check if already subscribed
-    const existing = await pool.request()
-      .input('EmailId', sql.NVarChar, emailId)
-      .query('SELECT * FROM NewsletterMaster WHERE EmailId = @EmailId');
-    if (existing.recordset.length > 0) {
+    const [rows] = await pool.execute('SELECT * FROM NewsletterMaster WHERE EmailId = ?', [emailId]);
+    if (rows.length > 0) {
       return sendResponse(res, 200, true, 'Already subscribed!');
     }
-    await pool.request()
-      .input('EmailId', sql.NVarChar, emailId)
-      .query('INSERT INTO NewsletterMaster (EmailId) VALUES (@EmailId)');
+    await pool.execute('INSERT INTO NewsletterMaster (EmailId) VALUES (?)', [emailId]);
     sendResponse(res, 200, true, 'Subscribed successfully!');
   } catch (err) {
     sendResponse(res, 500, false, 'Internal Server Error', null, err.message);

@@ -1,30 +1,24 @@
-const sql = require('mssql');
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 const config = {
+  host: process.env.DB_SERVER,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
   database: process.env.DB_NAME,
-  port: parseInt(process.env.DB_PORT) || 1433,
-  options: {
-    encrypt: true, // Enable encryption for remote connection
-    trustServerCertificate: true,
-  },
-  pool: {
-    max: 10,
-    min: 0,
-    idleTimeoutMillis: 30000,
-  },
+  port: parseInt(process.env.DB_PORT) || 3306,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 };
 
 let pool;
 
 async function getPool() {
   if (!pool) {
-    pool = await sql.connect(config);
+    pool = mysql.createPool(config);
   }
   return pool;
 }
 
-module.exports = { getPool, sql };
+module.exports = { getPool };
